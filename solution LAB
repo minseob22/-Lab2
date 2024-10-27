@@ -1,0 +1,84 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_STUDENTS 100
+
+struct student {
+    char name[100];
+    int studentID;
+    int age;
+};
+
+void addStudent(struct student student[], int *size, char *name, int studentID, int age) {
+    // 학번이 겹치는지 확인
+    for (int i = 0; i < *size; i++) {
+        if (student[i].studentID == studentID) {
+            printf("ERROR: Invalid student ID\n");
+            return;
+        }
+    }
+
+    // 나이 확인
+    if (age < 18 || age > 65) {
+        printf("ERROR: Age should be between 18 and 65\n");
+        return;
+    }
+
+    if (*size < MAX_STUDENTS) {
+        strcpy(student[*size].name, name);
+        student[*size].age = age;
+        student[*size].studentID = studentID;
+        (*size)++;
+    } else {
+        printf("ERROR: Array is full\n");
+    }
+}
+
+void deleteStudent(struct student student[], int *size, int studentID) {
+    int found = 0;
+    
+    // studentID를 가진 학생을 찾기
+    for (int i = 0; i < *size; i++) {
+        if (student[i].studentID == studentID) {
+            found = 1;
+
+            // 삭제할 학생 위치부터 배열의 끝까지 한 칸씩 앞으로 이동
+            for (int j = i; j < *size - 1; j++) {
+                student[j] = student[j + 1];
+            }
+
+            (*size)--;  // 배열 크기 줄이기
+            printf("Student with ID %d has been deleted.\n", studentID);
+            break;
+        }
+    }
+
+    if (!found) {
+        printf("ERROR: Student with ID %d not found.\n", studentID);
+    }
+}
+
+int main() {
+    struct student student[MAX_STUDENTS];
+    int size = 0;
+
+    addStudent(student, &size, "James", 20211231, 43);
+    addStudent(student, &size, "Kim", 1001, 20);
+    addStudent(student, &size, "Lee", 1002, 70);  
+    addStudent(student, &size, "Park", 1003, 25);
+
+    printf("Before deletion:\n");
+    for (int i = 0; i < size; i++) {
+        printf("Name: %s, Age: %d, ID: %d\n", student[i].name, student[i].age, student[i].studentID);
+    }
+
+    // 특정 ID의 학생 삭제
+    deleteStudent(student, &size, 1001);
+
+    printf("\nAfter deletion:\n");
+    for (int i = 0; i < size; i++) {
+        printf("Name: %s, Age: %d, ID: %d\n", student[i].name, student[i].age, student[i].studentID);
+    }
+
+    return 0;
+}
